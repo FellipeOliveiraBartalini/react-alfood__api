@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import http from '../../../http';
 import IPrato from '../../../interfaces/IPrato';
 import IRestaurante from '../../../interfaces/IRestaurante';
 import Prato from '../Prato';
@@ -14,13 +14,13 @@ const Restaurante = ({ restaurante }: RestauranteProps) => {
   const [pratos, setPratos] = useState<IPrato[]>();
 
   useEffect(() => {
-    axios.get<IPrato[]>(`http://localhost:8000/api/v1/restaurantes/${restaurante.id}/pratos/`)
+    http.get<IPrato[]>(`http://localhost:8000/api/v1/restaurantes/${restaurante.id}/pratos/`)
       .then(resposta => {
         setPratos(resposta.data);
       })
       .catch(error => {
         console.log(error);
-      })
+      });
   }, [restaurante.id]);
 
   return (<section className={estilos.Restaurante}>
@@ -30,7 +30,7 @@ const Restaurante = ({ restaurante }: RestauranteProps) => {
     <div>
       {pratos?.map(item => <Prato prato={item} key={item.id} />)}
     </div>
-  </section>)
-}
+  </section>);
+};
 
-export default Restaurante
+export default Restaurante;

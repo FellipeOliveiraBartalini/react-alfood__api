@@ -1,5 +1,6 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import React, { useEffect, useState } from 'react';
+import http from '../../http';
 import { IPaginacao } from '../../interfaces/IPaginacao';
 import IRestaurante from '../../interfaces/IRestaurante';
 import style from './ListaRestaurantes.module.scss';
@@ -20,7 +21,7 @@ const ListaRestaurantes = () => {
 
   const carregarDados = (url: string, opcoes: AxiosRequestConfig = {}) => {
 
-    axios.get<IPaginacao<IRestaurante>>(url, opcoes)
+    http.get<IPaginacao<IRestaurante>>(url, opcoes)
       .then(resposta => {
         setRestaurantes(resposta.data.results);
         setProximaPagina(resposta.data.next);
