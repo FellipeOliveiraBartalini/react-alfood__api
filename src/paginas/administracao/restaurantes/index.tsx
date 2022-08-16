@@ -1,4 +1,5 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import IRestaurante from '../../../interfaces/IRestaurante';
@@ -12,6 +13,19 @@ export default function AdministracaoRestaurantes() {
       .then(resposta => setRestaurantes(resposta.data));
   }, []);
 
+  const excluir = (restauranteToBeDeleted: IRestaurante) => {
+    axios.delete(`http://localhost:8000/api/v2/restaurantes/${restauranteToBeDeleted.id}/`)
+      .then(resposta => {
+        alert('Restaurante excluído com sucesso!');
+
+        const novaListaRestaurantes = restaurantes.filter(restaurante => restaurante.id !== restauranteToBeDeleted.id);
+        setRestaurantes([ ...novaListaRestaurantes ]);
+      })
+      .catch(error => {
+        console.error('error > ', error);
+      });
+  };
+
   return (
     <TableContainer>
       <Table>
@@ -19,6 +33,12 @@ export default function AdministracaoRestaurantes() {
           <TableRow>
             <TableCell>
               Nome
+            </TableCell>
+            <TableCell>
+              Editar
+            </TableCell>
+            <TableCell>
+              Excluir
             </TableCell>
           </TableRow>
         </TableHead>
@@ -28,6 +48,14 @@ export default function AdministracaoRestaurantes() {
             <TableRow key={restaurante.id}>
               <TableCell>
                 {restaurante.nome}
+              </TableCell>
+              <TableCell>
+                <Link to={`/admin/restaurantes/${restaurante.id}`}>[ editar ]</Link>
+              </TableCell>
+              <TableCell>
+                <Button variant='outlined' color='error' onClick={() => excluir(restaurante)}>
+                  Excluir
+                </Button>
               </TableCell>
             </TableRow>
           ))}
