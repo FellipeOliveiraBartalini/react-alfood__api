@@ -38,23 +38,35 @@ export default function FormularioPrato() {
     const aoSubmeterForm = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (parametros.id) {
-            http.put(`pratos/${parametros.id}/`, { nome: nomePrato })
-                .then(resposta => {
-                    alert('Prato atualizado com sucesso!');
-                })
-                .catch(error => {
-                    console.error('error: ', error);
-                });
-        } else {
-            http.post('pratos/', { nome: nomePrato })
-                .then(resposta => {
-                    alert('Prato cadastrado com sucesso!');
-                })
-                .catch(error => {
-                    console.error('error: ', error);
-                });
+        const formData = new FormData;
+
+        formData.append('nome', nomePrato);
+        formData.append('descricao', descricao);
+
+        formData.append('tag', tag);
+
+        formData.append('restaurante', restaurante);
+
+        if (imagem) {
+            formData.append('imagem', imagem);
         }
+
+        http.request({
+            url: 'pratos/',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data: formData
+        })
+            .then(() => {
+                setNomePrato('')
+                setDescricao('')
+                setTag('')
+                setRestaurante('')
+                alert('Prato cadastrado com sucesso!')
+            })
+            .catch(error => console.error(error));
     };
 
     return (
@@ -85,7 +97,7 @@ export default function FormularioPrato() {
                     <InputLabel id='select-tag'>Tag</InputLabel>
                     <Select labelId='select-tag' value={tag} onChange={event => setTag(event.target.value)}>
                         {tags.map(tag => (
-                            <MenuItem value={tag.id} key={tag.id}>
+                            <MenuItem value={tag.value} key={tag.id}>
                                 {tag.value}
                             </MenuItem>
                         ))}
