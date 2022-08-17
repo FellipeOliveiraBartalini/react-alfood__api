@@ -14,13 +14,23 @@ export default function FormularioPrato() {
 
     const [tag, setTag] = useState('');
     const [tags, setTags] = useState<ITag[]>([]);
-    
+
     const [restaurante, setRestaurante] = useState('');
     const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
 
     const [imagem, setImagem] = useState<File | null>(null);
 
     useEffect(() => {
+        if (parametros.id) {
+            http.get<IPrato>(`pratos/${parametros.id}/`)
+                .then(resposta => {
+                    setNomePrato(resposta.data.nome);
+                    setDescricao(resposta.data.descricao);
+                    setTag(resposta.data.tag);
+                    setRestaurante(String(resposta.data.restaurante));
+                });
+        }
+
         http.get<{ tags: ITag[] }>('tags/')
             .then(resposta => setTags(resposta.data.tags));
         http.get<IRestaurante[]>('restaurantes/')
@@ -51,22 +61,42 @@ export default function FormularioPrato() {
             formData.append('imagem', imagem);
         }
 
-        http.request({
-            url: 'pratos/',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            data: formData
-        })
-            .then(() => {
-                setNomePrato('')
-                setDescricao('')
-                setTag('')
-                setRestaurante('')
-                alert('Prato cadastrado com sucesso!')
+        if (parametros.id) {
+            http.request({
+                url: `pratos/${parametros.id}/`,
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                data: formData
             })
-            .catch(error => console.error(error));
+                .then(() => {
+                    setNomePrato('');
+                    setDescricao('');
+                    setTag('');
+                    setRestaurante('');
+                    alert('Prato atualizado com sucesso!');
+                })
+                .catch(error => console.error(error));
+
+        } else {
+            http.request({
+                url: 'pratos/',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                data: formData
+            })
+                .then(() => {
+                    setNomePrato('');
+                    setDescricao('');
+                    setTag('');
+                    setRestaurante('');
+                    alert('Prato cadastrado com sucesso!');
+                })
+                .catch(error => console.error(error));
+        }
     };
 
     return (
@@ -92,7 +122,7 @@ export default function FormularioPrato() {
                     margin='dense'
                     required
                 />
-                
+
                 <FormControl margin='dense' fullWidth>
                     <InputLabel id='select-tag'>Tag</InputLabel>
                     <Select labelId='select-tag' value={tag} onChange={event => setTag(event.target.value)}>
@@ -115,7 +145,7 @@ export default function FormularioPrato() {
                     </Select>
                 </FormControl>
 
-                <input type="file" onChange={event => selecionaArquivo(event)}/>
+                <input type="file" onChange={event => selecionaArquivo(event)} />
 
                 <Button sx={{ marginTop: 1 }} type='submit' variant="outlined" fullWidth>Salvar</Button>
             </Box>
