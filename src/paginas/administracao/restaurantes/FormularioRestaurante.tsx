@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import http from '../../../http';
 
 export default function FormularioRestaurante() {
@@ -14,7 +14,7 @@ export default function FormularioRestaurante() {
                 })
                 .catch(error => {
                     console.error('error', error);
-                    
+
                 });
         }
     }, [parametros]);
@@ -26,12 +26,12 @@ export default function FormularioRestaurante() {
 
         if (parametros.id) {
             http.put(`restaurantes/${parametros.id}/`, { nome: nomeRestaurante })
-            .then(resposta => {
-                alert('Restaurante atualizado com sucesso!');
-            })
-            .catch(error => {
-                console.error('error: ', error);
-            });
+                .then(resposta => {
+                    alert('Restaurante atualizado com sucesso!');
+                })
+                .catch(error => {
+                    console.error('error: ', error);
+                });
         } else {
             http.post('restaurantes/', { nome: nomeRestaurante })
                 .then(resposta => {
@@ -46,9 +46,9 @@ export default function FormularioRestaurante() {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexGrow: 1 }}>
             <Typography component="h1" variant='h6'>Formulário de Restaurante</Typography>
-            <Box component="form" onSubmit={aoSubmeterForm}>
+            <Box component="form" sx={{ width: '100%' }} onSubmit={aoSubmeterForm}>
                 <TextField
                     label="Nome do Restaurante"
                     variant="standard"
